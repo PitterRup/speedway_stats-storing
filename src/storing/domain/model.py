@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
+from typing import Optional
 
 class HelmetColor(Enum):
     RED = 'red'
@@ -22,23 +23,31 @@ class RiderScore:
     defect: bool
     fall: bool
     exclusion: bool
+    composition_rider_id: int
 
 
 @dataclass
 class RiderScores:
-    rider_a: RiderScore
-    rider_b: RiderScore
-    rider_c: RiderScore
-    rider_d: RiderScore
+    rider_a: Optional[RiderScore] = None
+    rider_b: Optional[RiderScore] = None
+    rider_c: Optional[RiderScore] = None
+    rider_d: Optional[RiderScore] = None
 
 
 class Heat:
-    def __init__(self, heat_number: int, attempt_number: int, finished: bool = False, winner_time: float = None):
+    possible_scores = sorted([s.value for s in list(Score)], reverse=True)
+
+    def __init__(
+        self, heat_number: int,
+        attempt_number: int,
+        finished: bool = False,
+        winner_time: float = None,
+    ):
         self.heat_number = heat_number
         self.attempt_number = attempt_number
         self.finished = finished
         self.winner_time = winner_time
-        self.rider_scores = dict()  # dict[str, RiderScore]
+        self.rider_scores: dict[str, Optional[RiderScore]] = dict()
 
     def __eq__(self, other):
         if not isinstance(other, Heat):
@@ -58,6 +67,8 @@ class Heat:
         return hash((self.heat_number, self.attempt_number))
 
     def save_result(self, rider_scores: RiderScores):
+        if not self.is_correct_scores(rider_scores):
+            raise Exception('Incorrect scores')
         if not self.rider_scores:
             self.rider_scores['a'] = rider_scores.rider_a
             self.rider_scores['b'] = rider_scores.rider_b
@@ -73,21 +84,56 @@ class Heat:
             if self.rider_scores['d'] != rider_scores.rider_d:
                 self.rider_scores['d'] = rider_scores.rider_d
 
+    def is_correct_scores(self, rider_scores: RiderScores):
+        scores = [s.score.value for s in rider_scores.__dict__.values() if s is not None]
+        return len(scores) == len(set(scores)) \
+            and set(scores) == set(self.possible_scores[:len(scores)])
+
+@dataclass(unsafe_hash=True)
+class TeamCompositionRider:
+    id_league_team_rider: int
+    rider_number: int
+
 
 class TeamMatchGame:
-    def __init__(self):
-        self.heats = set()  # Set[Heat]
+    def __init__(self, id_team_match: int):
+        self.id_team_match = id_team_match
+        self.home_team_composition: set[TeamCompositionRider] = set()
+        self.guest_team_composition: set[TeamCompositionRider] = set()
+        self.heats: set[Heat] = set()
 
-    def finish_heat(self, heat: Heat, rider_scores: RiderScores):
+    def add_teams_compositions(
+        self,
+        home_team_composition: list[TeamCompositionRider],
+        guest_team_composition: list[TeamCompositionRider],
+    ):
+        if self.can_add_home_composition(home_team_composition):
+            self.home_team_composition.update(home_team_composition)
+        if self.can_add_guest_composition(guest_team_composition):
+            self.guest_team_composition.update(guest_team_composition)
+
+    def can_add_home_composition(self, composition: list[TeamCompositionRider]):
+        return len(composition) <= 8 and len(
+            [rider for rider in composition if not 9 <= rider.rider_number <= 16]
+        ) == 0 and len(composition) == len(set([r.rider_number for r in composition]))
+
+    def can_add_guest_composition(self, composition: list[TeamCompositionRider]):
+        return len(composition) <= 8 and len(
+            [rider for rider in composition if not 1 <= rider.rider_number <= 8]
+        ) == 0 and len(composition) == len(set([r.rider_number for r in composition]))
+
+    def finish_heat_attempt(self, heat: Heat, rider_scores: RiderScores):
         if heat in self.heats:
             heat = next(h for h in self.heats if h == heat)
             heat.save_result(rider_scores)
-        elif not heat.finished or self.can_add_heat(heat):
+        elif self.can_add_heat(heat):
             self.heats.add(heat)
+            heat.save_result(rider_scores)
         else:
             raise Exception('More than 15 heats already')
-        heat.save_result(rider_scores)                    
 
-    def can_add_heat(self, heat: Heat):        
+    def can_add_heat(self, heat: Heat):
+        if not heat.finished:
+            return True
         return len([h for h in self.heats if h.finished]) < 15
             

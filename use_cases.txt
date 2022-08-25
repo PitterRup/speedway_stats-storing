@@ -4,11 +4,11 @@ Heat can't contain more than 4 riders.
 Heat contain only rider a, b, c and d.
 Heat scores are 3, 2, 1 or 0.
 
+Team match composition can't contain more than 8 riders.
+
 Team can't take part in more than one match in the same match date.
 
 Total team score can't be less than 0 and more than 90.
-
-Team match composition can't contain more than 8 riders.
 
 League contain only 8 teams.
 League have 14 rounds in basic part.
