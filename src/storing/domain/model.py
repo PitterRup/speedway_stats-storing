@@ -8,6 +8,8 @@ class HelmetColor(Enum):
     WHITE = 'white'
     YELLOW = 'yellow'
 
+HOME_TEAM_HELMETS = [HelmetColor.RED, HelmetColor.BLUE]
+GUEST_TEAM_HELMETS = [HelmetColor.WHITE, HelmetColor.YELLOW]
 
 class Score(Enum):
     THREE = 3
@@ -15,7 +17,7 @@ class Score(Enum):
     ONE = 1
     ZERO = 0
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class RiderScore:
     score: Score
     helmet_color: HelmetColor
@@ -23,7 +25,7 @@ class RiderScore:
     defect: bool
     fall: bool
     exclusion: bool
-    composition_rider_id: int
+    rider_number: int
 
 
 @dataclass
@@ -86,8 +88,11 @@ class Heat:
 
     def is_correct_scores(self, rider_scores: RiderScores):
         scores = [s.score.value for s in rider_scores.__dict__.values() if s is not None]
+        helmets = [s.helmet_color.value for s in rider_scores.__dict__.values() if s is not None]
         return len(scores) == len(set(scores)) \
-            and set(scores) == set(self.possible_scores[:len(scores)])
+            and set(scores) == set(self.possible_scores[:len(scores)]) \
+            and len(scores) == len(set(helmets))
+
 
 @dataclass(unsafe_hash=True)
 class TeamCompositionRider:
@@ -109,8 +114,12 @@ class TeamMatchGame:
     ):
         if self.can_add_home_composition(home_team_composition):
             self.home_team_composition.update(home_team_composition)
+        else:
+            raise Exception('Invalid composition')
         if self.can_add_guest_composition(guest_team_composition):
             self.guest_team_composition.update(guest_team_composition)
+        else:
+            raise Exception('Invalid composition')
 
     def can_add_home_composition(self, composition: list[TeamCompositionRider]):
         return len(composition) <= 8 and len(
@@ -123,6 +132,8 @@ class TeamMatchGame:
         ) == 0 and len(composition) == len(set([r.rider_number for r in composition]))
 
     def finish_heat_attempt(self, heat: Heat, rider_scores: RiderScores):
+        if not self.are_valid_riders(rider_scores):
+            raise Exception('Invalid riders')
         if heat in self.heats:
             heat = next(h for h in self.heats if h == heat)
             heat.save_result(rider_scores)
@@ -131,6 +142,21 @@ class TeamMatchGame:
             heat.save_result(rider_scores)
         else:
             raise Exception('More than 15 heats already')
+
+    def are_valid_riders(self, riders: RiderScores):
+        home_rider_numbers = [r.rider_number for r in self.home_team_composition]
+        guest_rider_numbers = [r.rider_number for r in self.guest_team_composition]
+        for rider in riders.__dict__.values():
+            if rider.rider_number not in home_rider_numbers \
+                and rider.rider_number not in guest_rider_numbers:
+                return False
+            if rider.rider_number in home_rider_numbers \
+                and rider.helmet_color not in HOME_TEAM_HELMETS:
+                return False
+            elif rider.rider_number in guest_rider_numbers \
+                and rider.helmet_color not in GUEST_TEAM_HELMETS: 
+                return False
+        return True
 
     def can_add_heat(self, heat: Heat):
         if not heat.finished:

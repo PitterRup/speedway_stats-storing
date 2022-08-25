@@ -1,7 +1,7 @@
 import pytest
 
-from tests.random_data import random_rider_scores, random_team_match_game
-from storing.domain.model import Heat, TeamCompositionRider
+from tests.random_data import random_rider_score, random_rider_scores, random_team_match_game
+from storing.domain.model import Heat, HelmetColor, RiderScores, Score, TeamCompositionRider
 
 
 def test_match_cannot_contain_more_than_15_finished_heats():
@@ -43,6 +43,7 @@ def test_match_can_conatain_more_than_15_unfinished_heats():
 
     assert len(match.heats) == 16
 
+
 def test_composition_can_contain_8_riders():
     # given
     match = random_team_match_game()
@@ -62,13 +63,12 @@ def test_composition_can_contain_8_riders():
     assert len(match.home_team_composition) == 8
     assert len(match.guest_team_composition) == 8
 
-    # when
+    # given
     home_team.append(TeamCompositionRider(id_league_team_rider=1000, rider_number=17))
-    match.add_teams_compositions(home_team, guest_team)
 
-    # then
-    assert len(match.home_team_composition) == 8
-    assert len(match.guest_team_composition) == 8
+    # when
+    with pytest.raises(Exception):
+        match.add_teams_compositions(home_team, guest_team)
 
 
 def test_home_composition_rider_numbers_are_from_9_to_16():
@@ -84,11 +84,8 @@ def test_home_composition_rider_numbers_are_from_9_to_16():
     ]
 
     # when
-    match.add_teams_compositions(home_team, guest_team)
-
-    # then
-    assert len(match.home_team_composition) == 0
-    assert len(match.guest_team_composition) == 8
+    with pytest.raises(Exception):
+        match.add_teams_compositions(home_team, guest_team)
 
 
 def test_guest_composition_rider_number_are_from_1_to_8():
@@ -104,11 +101,9 @@ def test_guest_composition_rider_number_are_from_1_to_8():
     ]
 
     # when
-    match.add_teams_compositions(home_team, guest_team)
+    with pytest.raises(Exception):
+        match.add_teams_compositions(home_team, guest_team)
 
-    # then
-    assert len(match.home_team_composition) == 8
-    assert len(match.guest_team_composition) == 0
 
 def test_composition_rider_numbers_must_be_unique():
     # given
@@ -123,8 +118,52 @@ def test_composition_rider_numbers_must_be_unique():
     ]
 
     # when
-    match.add_teams_compositions(home_team, guest_team)
+    with pytest.raises(Exception):
+        match.add_teams_compositions(home_team, guest_team)
+
+
+def test_heat_contain_only_composition_riders():
+    # given
+    match = random_team_match_game()
+
+    # when
+    match.finish_heat_attempt(
+        Heat(1, 1, True),
+        RiderScores(
+            rider_a=random_rider_score(Score.THREE, HelmetColor.BLUE, 9),
+            rider_b=random_rider_score(Score.TWO, HelmetColor.RED, 10),
+            rider_c=random_rider_score(Score.ONE, HelmetColor.WHITE, 1),
+            rider_d=random_rider_score(Score.ZERO, HelmetColor.YELLOW, 2),
+        ),
+    )
 
     # then
-    assert len(match.home_team_composition) == 0
-    assert len(match.guest_team_composition) == 0
+    assert len(match.heats) == 1
+
+    # when
+    with pytest.raises(Exception):
+        match.finish_heat_attempt(
+            Heat(2, 1, True),
+            RiderScores(
+                rider_a=random_rider_score(Score.THREE, HelmetColor.BLUE, 22),
+                rider_b=random_rider_score(Score.TWO, HelmetColor.RED, 23),
+                rider_c=random_rider_score(Score.ONE, HelmetColor.WHITE, 24),
+                rider_d=random_rider_score(Score.ZERO, HelmetColor.YELLOW, 25),
+            ),
+        )
+
+def test_helmet_color_red_and_blue_are_home_team_and_other_are_guest():
+    # given
+    match = random_team_match_game()
+
+    # when
+    with pytest.raises(Exception):
+        match.finish_heat_attempt(
+            Heat(1, 1, True),
+            RiderScores(
+                rider_a=random_rider_score(Score.THREE, HelmetColor.BLUE, 1),
+                rider_b=random_rider_score(Score.TWO, HelmetColor.RED, 2),
+                rider_c=random_rider_score(Score.ONE, HelmetColor.WHITE, 9),
+                rider_d=random_rider_score(Score.ZERO, HelmetColor.YELLOW, 10),
+            ),
+        )
