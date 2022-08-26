@@ -1,7 +1,9 @@
 import pytest
 
 from tests.random_data import random_rider_score, random_rider_scores, random_team_match_game
-from storing.domain.model import Heat, HelmetColor, RiderScores, Score, TeamCompositionRider
+from storing.domain.models.team_match_game import (
+    Heat, HelmetColor, RiderScores, Score, TeamCompositionRider
+)
 
 
 def test_match_cannot_contain_more_than_15_finished_heats():

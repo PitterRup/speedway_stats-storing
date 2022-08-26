@@ -1,7 +1,7 @@
 from random import choice
 from typing import Optional
 
-from storing.domain.model import (
+from storing.domain.models.team_match_game import (
     TeamCompositionRider, TeamMatchGame, RiderScores,
     RiderScore, HelmetColor, Score, HOME_TEAM_HELMETS
 )

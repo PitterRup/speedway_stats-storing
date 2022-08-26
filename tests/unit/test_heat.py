@@ -1,7 +1,7 @@
 import pytest
 
 from tests.random_data import random_rider_score, random_rider_scores
-from storing.domain.model import Heat, HelmetColor, RiderScores, Score
+from storing.domain.models.team_match_game import Heat, HelmetColor, RiderScores, Score
 
 
 def test_heat_can_contain_less_than_4_riders():
