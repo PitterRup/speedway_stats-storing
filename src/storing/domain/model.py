@@ -87,8 +87,16 @@ class Heat:
                 self.rider_scores['d'] = rider_scores.rider_d
 
     def is_correct_scores(self, rider_scores: RiderScores):
-        scores = [s.score.value for s in rider_scores.__dict__.values() if s is not None and s.score is not None]
-        helmets = [s.helmet_color.value for s in rider_scores.__dict__.values() if s is not None and s.score is not None]
+        scores = [
+            s.score.value
+            for s in rider_scores.__dict__.values()
+            if s is not None and s.score is not None
+        ]
+        helmets = [
+            s.helmet_color.value
+            for s in rider_scores.__dict__.values()
+            if s is not None and s.score is not None
+        ]
         return len(scores) == len(set(scores)) \
             and set(scores) == set(self.possible_scores[:len(scores)]) \
             and len(scores) == len(set(helmets))
