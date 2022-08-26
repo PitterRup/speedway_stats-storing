@@ -88,7 +88,7 @@ def test_home_composition_rider_numbers_are_from_9_to_16():
         match.add_teams_compositions(home_team, guest_team)
 
 
-def test_guest_composition_rider_number_are_from_1_to_8():
+def test_guest_composition_rider_numbers_are_from_1_to_8():
     # given
     match = random_team_match_game()
     home_team = [
@@ -167,3 +167,52 @@ def test_helmet_color_red_and_blue_are_home_team_and_other_are_guest():
                 rider_d=random_rider_score(Score.ZERO, HelmetColor.YELLOW, 10),
             ),
         )
+
+def test_teams_scores():
+    # given
+    match = random_team_match_game()
+
+    # when
+    match.finish_heat_attempt(
+        Heat(1, 1, True),
+        RiderScores(
+            rider_a=random_rider_score(Score.THREE, HelmetColor.BLUE, 10),
+            rider_b=random_rider_score(Score.TWO, HelmetColor.RED, 9),
+            rider_c=random_rider_score(Score.ONE, HelmetColor.WHITE, 1),
+            rider_d=random_rider_score(Score.ZERO, HelmetColor.YELLOW, 2),
+        ),
+    )
+
+    # then
+    assert match.home_team_scores == 5
+    assert match.guest_team_scores == 1
+
+    # when
+    match.finish_heat_attempt(
+        Heat(2, 1, True),
+        RiderScores(
+            rider_a=random_rider_score(Score.ZERO, HelmetColor.BLUE, 9),
+            rider_b=random_rider_score(Score.TWO, HelmetColor.RED, 10),
+            rider_c=random_rider_score(Score.ONE, HelmetColor.WHITE, 1),
+            rider_d=random_rider_score(Score.THREE, HelmetColor.YELLOW, 2),
+        ),
+    )
+
+    # then
+    assert match.home_team_scores == 7
+    assert match.guest_team_scores == 5
+
+    # when
+    match.finish_heat_attempt(
+        Heat(3, 1, False),
+        RiderScores(
+            rider_a=random_rider_score(None, HelmetColor.BLUE, 9, exclusion=True),
+            rider_b=random_rider_score(None, HelmetColor.RED, 10),
+            rider_c=random_rider_score(None, HelmetColor.WHITE, 1),
+            rider_d=random_rider_score(None, HelmetColor.YELLOW, 2),
+        ),
+    )
+
+    # then
+    assert match.home_team_scores == 7
+    assert match.guest_team_scores == 5

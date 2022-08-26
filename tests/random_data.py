@@ -37,13 +37,17 @@ def random_rider_score(
     score: Optional[Score] = None,
     helmet_color: Optional[HelmetColor] = None,
     rider_number: Optional[int] = None,
+    warning: bool = False,
+    defect: bool = False,
+    fall: bool = False,
+    exclusion: bool = False,
 ) -> RiderScore:
     return RiderScore(
-        score=choice(list(Score)) if score is None else score,
+        score=score,
         helmet_color=choice(list(HelmetColor)) if helmet_color is None else helmet_color,
-        waring=False,
-        defect=False,
-        fall=False,
-        exclusion=False,
+        warning=warning,
+        defect=defect,
+        fall=fall,
+        exclusion=exclusion,
         rider_number=1 if rider_number is None else rider_number,
     )

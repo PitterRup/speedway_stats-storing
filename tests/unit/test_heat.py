@@ -55,8 +55,8 @@ def test_riders_have_unique_helmet_colors():
         ))
 
 
-def test_riders_received_most_scores_as_it_possible():
-        # given
+def test_riders_received_most_scores_as_possible():
+    # given
     heat = Heat(heat_number=1, attempt_number=1, finished=True)
 
     # when
@@ -74,3 +74,17 @@ def test_riders_received_most_scores_as_it_possible():
             rider_c=random_rider_score(Score.ZERO, HelmetColor.WHITE),
             rider_d=None
         ))
+
+def test_heat_attempt_not_finished_must_have_result_without_scores():
+    # given
+    heat = Heat(heat_number=1, attempt_number=1, finished=False)
+
+    # when
+    heat.save_result(
+        RiderScores(
+            rider_a=random_rider_score(None, HelmetColor.BLUE),
+            rider_b=random_rider_score(None, HelmetColor.RED),
+            rider_c=random_rider_score(None, HelmetColor.WHITE),
+            rider_d=random_rider_score(None, HelmetColor.YELLOW, exclusion=True),
+        )
+    )

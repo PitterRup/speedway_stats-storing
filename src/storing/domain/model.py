@@ -19,9 +19,9 @@ class Score(Enum):
 
 @dataclass(unsafe_hash=True)
 class RiderScore:
-    score: Score
+    score: Optional[Score]
     helmet_color: HelmetColor
-    waring: bool
+    warning: bool
     defect: bool
     fall: bool
     exclusion: bool
@@ -87,8 +87,8 @@ class Heat:
                 self.rider_scores['d'] = rider_scores.rider_d
 
     def is_correct_scores(self, rider_scores: RiderScores):
-        scores = [s.score.value for s in rider_scores.__dict__.values() if s is not None]
-        helmets = [s.helmet_color.value for s in rider_scores.__dict__.values() if s is not None]
+        scores = [s.score.value for s in rider_scores.__dict__.values() if s is not None and s.score is not None]
+        helmets = [s.helmet_color.value for s in rider_scores.__dict__.values() if s is not None and s.score is not None]
         return len(scores) == len(set(scores)) \
             and set(scores) == set(self.possible_scores[:len(scores)]) \
             and len(scores) == len(set(helmets))
@@ -154,7 +154,7 @@ class TeamMatchGame:
                 and rider.helmet_color not in HOME_TEAM_HELMETS:
                 return False
             elif rider.rider_number in guest_rider_numbers \
-                and rider.helmet_color not in GUEST_TEAM_HELMETS: 
+                and rider.helmet_color not in GUEST_TEAM_HELMETS:
                 return False
         return True
 
@@ -162,4 +162,23 @@ class TeamMatchGame:
         if not heat.finished:
             return True
         return len([h for h in self.heats if h.finished]) < 15
-            
+
+    @property
+    def home_team_scores(self):
+        scores = 0
+        for heat in self.heats:
+            if heat.finished:
+                for rider in heat.rider_scores.values():
+                    if rider and rider.score and rider.helmet_color in HOME_TEAM_HELMETS:
+                        scores += rider.score.value
+        return scores
+
+    @property
+    def guest_team_scores(self):
+        scores = 0
+        for heat in self.heats:
+            if heat.finished:
+                for rider in heat.rider_scores.values():
+                    if rider and rider.score and rider.helmet_color in GUEST_TEAM_HELMETS:
+                        scores += rider.score.value
+        return scores
