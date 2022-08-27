@@ -1,5 +1,6 @@
 from random import choice
 from typing import Optional
+from storing.domain.models.league_season import LeagueTeam, TeamSponsor
 
 from storing.domain.models.team_match_game import (
     TeamCompositionRider, TeamMatchGame, RiderScores,
@@ -50,4 +51,11 @@ def random_rider_score(
         fall=fall,
         exclusion=exclusion,
         rider_number=1 if rider_number is None else rider_number,
+    )
+
+def random_league_team(id_team):
+    return LeagueTeam(
+        id_team=id_team,
+        sponsor=TeamSponsor(full_name='team', titular=True),
+        id_stadium=1,
     )
