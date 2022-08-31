@@ -1,6 +1,6 @@
 from random import choice
 from typing import Optional
-from storing.domain.models.league_season import LeagueTeam, TeamSponsor
+from storing.domain.models.league_season import LeagueSeason, LeagueTeam, TeamSponsor, LeagueSponsor
 
 from storing.domain.models.team_match_game import (
     TeamCompositionRider, TeamMatchGame, RiderScores,
@@ -57,5 +57,11 @@ def random_league_team(id_team):
     return LeagueTeam(
         id_team=id_team,
         sponsor=TeamSponsor(full_name='team', titular=True),
-        id_stadium=1,
+    )
+
+def random_league_season(year: int = None):
+    return LeagueSeason(
+        year=year or 2022,
+        id_league=1,
+        sponsor=LeagueSponsor(full_name='sponsor', titular=True)
     )
