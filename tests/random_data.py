@@ -8,7 +8,7 @@ from storing.domain.models.team_match_game import (
 )
 
 def random_team_match_game() -> TeamMatchGame:
-    match = TeamMatchGame(1)
+    match = TeamMatchGame(1, 1, 2)
     home_team = [
         TeamCompositionRider(id_league_team_rider=i + 100, rider_number=i)
         for i in range(9, 17)
@@ -22,7 +22,7 @@ def random_team_match_game() -> TeamMatchGame:
 
 def random_rider_scores(rider_numbers: int = 4) -> RiderScores:
     rider_types = ['rider_a', 'rider_b', 'rider_c', 'rider_d']
-    scores = sorted(list(Score), key=lambda s: s.value, reverse=True)
+    scores = [Score(3), Score(2), Score(1), Score(0)]
     helmets = list(HelmetColor)
     riders = {
         rider_types[i]: random_rider_score(

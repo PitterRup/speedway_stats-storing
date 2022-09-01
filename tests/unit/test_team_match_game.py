@@ -132,10 +132,10 @@ def test_heat_contain_only_composition_riders():
     match.finish_heat_attempt(
         Heat(1, 1, True),
         RiderScores(
-            rider_a=random_rider_score(Score.THREE, HelmetColor.BLUE, 9),
-            rider_b=random_rider_score(Score.TWO, HelmetColor.RED, 10),
-            rider_c=random_rider_score(Score.ONE, HelmetColor.WHITE, 1),
-            rider_d=random_rider_score(Score.ZERO, HelmetColor.YELLOW, 2),
+            rider_a=random_rider_score(Score(3), HelmetColor.BLUE, 9),
+            rider_b=random_rider_score(Score(2), HelmetColor.RED, 10),
+            rider_c=random_rider_score(Score(1), HelmetColor.WHITE, 1),
+            rider_d=random_rider_score(Score(0), HelmetColor.YELLOW, 2),
         ),
     )
 
@@ -147,10 +147,10 @@ def test_heat_contain_only_composition_riders():
         match.finish_heat_attempt(
             Heat(2, 1, True),
             RiderScores(
-                rider_a=random_rider_score(Score.THREE, HelmetColor.BLUE, 22),
-                rider_b=random_rider_score(Score.TWO, HelmetColor.RED, 23),
-                rider_c=random_rider_score(Score.ONE, HelmetColor.WHITE, 24),
-                rider_d=random_rider_score(Score.ZERO, HelmetColor.YELLOW, 25),
+                rider_a=random_rider_score(Score(3), HelmetColor.BLUE, 22),
+                rider_b=random_rider_score(Score(2), HelmetColor.RED, 23),
+                rider_c=random_rider_score(Score(1), HelmetColor.WHITE, 24),
+                rider_d=random_rider_score(Score(0), HelmetColor.YELLOW, 25),
             ),
         )
 
@@ -163,10 +163,10 @@ def test_helmet_color_red_and_blue_are_home_team_and_other_are_guest():
         match.finish_heat_attempt(
             Heat(1, 1, True),
             RiderScores(
-                rider_a=random_rider_score(Score.THREE, HelmetColor.BLUE, 1),
-                rider_b=random_rider_score(Score.TWO, HelmetColor.RED, 2),
-                rider_c=random_rider_score(Score.ONE, HelmetColor.WHITE, 9),
-                rider_d=random_rider_score(Score.ZERO, HelmetColor.YELLOW, 10),
+                rider_a=random_rider_score(Score(3), HelmetColor.BLUE, 1),
+                rider_b=random_rider_score(Score(2), HelmetColor.RED, 2),
+                rider_c=random_rider_score(Score(1), HelmetColor.WHITE, 9),
+                rider_d=random_rider_score(Score(0), HelmetColor.YELLOW, 10),
             ),
         )
 
@@ -178,10 +178,10 @@ def test_teams_scores():
     match.finish_heat_attempt(
         Heat(1, 1, True),
         RiderScores(
-            rider_a=random_rider_score(Score.THREE, HelmetColor.BLUE, 10),
-            rider_b=random_rider_score(Score.TWO, HelmetColor.RED, 9),
-            rider_c=random_rider_score(Score.ONE, HelmetColor.WHITE, 1),
-            rider_d=random_rider_score(Score.ZERO, HelmetColor.YELLOW, 2),
+            rider_a=random_rider_score(Score(3), HelmetColor.BLUE, 10),
+            rider_b=random_rider_score(Score(2), HelmetColor.RED, 9),
+            rider_c=random_rider_score(Score(1), HelmetColor.WHITE, 1),
+            rider_d=random_rider_score(Score(0), HelmetColor.YELLOW, 2),
         ),
     )
 
@@ -193,10 +193,10 @@ def test_teams_scores():
     match.finish_heat_attempt(
         Heat(2, 1, True),
         RiderScores(
-            rider_a=random_rider_score(Score.ZERO, HelmetColor.BLUE, 9),
-            rider_b=random_rider_score(Score.TWO, HelmetColor.RED, 10),
-            rider_c=random_rider_score(Score.ONE, HelmetColor.WHITE, 1),
-            rider_d=random_rider_score(Score.THREE, HelmetColor.YELLOW, 2),
+            rider_a=random_rider_score(Score(0), HelmetColor.BLUE, 9),
+            rider_b=random_rider_score(Score(2), HelmetColor.RED, 10),
+            rider_c=random_rider_score(Score(1), HelmetColor.WHITE, 1),
+            rider_d=random_rider_score(Score(3), HelmetColor.YELLOW, 2),
         ),
     )
 

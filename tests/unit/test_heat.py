@@ -28,10 +28,10 @@ def test_riders_received_unique_scores():
     # when
     with pytest.raises(Exception):
         heat.save_result(RiderScores(
-            rider_a=random_rider_score(Score.ONE, HelmetColor.BLUE),
-            rider_b=random_rider_score(Score.ONE, HelmetColor.RED),
-            rider_c=random_rider_score(Score.ONE, HelmetColor.WHITE),
-            rider_d=random_rider_score(Score.ONE, HelmetColor.YELLOW),
+            rider_a=random_rider_score(Score(1), HelmetColor.BLUE),
+            rider_b=random_rider_score(Score(1), HelmetColor.RED),
+            rider_c=random_rider_score(Score(1), HelmetColor.WHITE),
+            rider_d=random_rider_score(Score(1), HelmetColor.YELLOW),
         ))
 
 
@@ -41,17 +41,17 @@ def test_riders_have_unique_helmet_colors():
 
     # when
     heat.save_result(RiderScores(
-        rider_a=random_rider_score(Score.THREE, HelmetColor.BLUE),
-        rider_b=random_rider_score(Score.TWO, HelmetColor.RED),
-        rider_c=random_rider_score(Score.ONE, HelmetColor.WHITE),
-        rider_d=random_rider_score(Score.ZERO, HelmetColor.YELLOW),
+        rider_a=random_rider_score(Score(3), HelmetColor.BLUE),
+        rider_b=random_rider_score(Score(2), HelmetColor.RED),
+        rider_c=random_rider_score(Score(1), HelmetColor.WHITE),
+        rider_d=random_rider_score(Score(0), HelmetColor.YELLOW),
     ))
     with pytest.raises(Exception):
         heat.save_result(RiderScores(
-            rider_a=random_rider_score(Score.THREE, HelmetColor.BLUE),
-            rider_b=random_rider_score(Score.TWO, HelmetColor.BLUE),
-            rider_c=random_rider_score(Score.ONE, HelmetColor.BLUE),
-            rider_d=random_rider_score(Score.ZERO, HelmetColor.BLUE),
+            rider_a=random_rider_score(Score(3), HelmetColor.BLUE),
+            rider_b=random_rider_score(Score(2), HelmetColor.BLUE),
+            rider_c=random_rider_score(Score(1), HelmetColor.BLUE),
+            rider_d=random_rider_score(Score(0), HelmetColor.BLUE),
         ))
 
 
@@ -61,17 +61,17 @@ def test_riders_received_most_scores_as_possible():
 
     # when
     heat.save_result(RiderScores(
-        rider_a=random_rider_score(Score.THREE, HelmetColor.BLUE),
-        rider_b=random_rider_score(Score.TWO, HelmetColor.RED),
+        rider_a=random_rider_score(Score(3), HelmetColor.BLUE),
+        rider_b=random_rider_score(Score(2), HelmetColor.RED),
         rider_c=None,
-        rider_d=random_rider_score(Score.ONE, HelmetColor.WHITE),
+        rider_d=random_rider_score(Score(1), HelmetColor.WHITE),
     ))
 
     with pytest.raises(Exception):
         heat.save_result(RiderScores(
-            rider_a=random_rider_score(Score.TWO, HelmetColor.BLUE),
-            rider_b=random_rider_score(Score.ONE, HelmetColor.RED),
-            rider_c=random_rider_score(Score.ZERO, HelmetColor.WHITE),
+            rider_a=random_rider_score(Score(2), HelmetColor.BLUE),
+            rider_b=random_rider_score(Score(1), HelmetColor.RED),
+            rider_c=random_rider_score(Score(0), HelmetColor.WHITE),
             rider_d=None
         ))
 

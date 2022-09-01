@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
+from typing import NewType, Optional
+
+from storing.domain.models.aggregate import AggregateRoot
 
 class HelmetColor(Enum):
     RED = 'red'
@@ -11,11 +13,7 @@ class HelmetColor(Enum):
 HOME_TEAM_HELMETS = [HelmetColor.RED, HelmetColor.BLUE]
 GUEST_TEAM_HELMETS = [HelmetColor.WHITE, HelmetColor.YELLOW]
 
-class Score(Enum):
-    THREE = 3
-    TWO = 2
-    ONE = 1
-    ZERO = 0
+Score = NewType('Score', int)
 
 @dataclass(unsafe_hash=True)
 class RiderScore:
@@ -37,10 +35,11 @@ class RiderScores:
 
 
 class Heat:
-    possible_scores = sorted([s.value for s in list(Score)], reverse=True)
+    possible_scores = [Score(3), Score(2), Score(1), Score(0)]
 
     def __init__(
-        self, heat_number: int,
+        self,
+        heat_number: int,
         attempt_number: int,
         finished: bool = False,
         winner_time: float = None,
@@ -88,7 +87,7 @@ class Heat:
 
     def is_correct_scores(self, rider_scores: RiderScores):
         scores = [
-            s.score.value
+            s.score
             for s in rider_scores.__dict__.values()
             if s is not None and s.score is not None
         ]
@@ -108,9 +107,12 @@ class TeamCompositionRider:
     rider_number: int
 
 
-class TeamMatchGame:
-    def __init__(self, id_team_match: int):
+class TeamMatchGame(AggregateRoot):
+    def __init__(self, id_team_match: int, id_home_league_team: int, id_guest_league_team: int):
+        super().__init__()
         self.id_team_match = id_team_match
+        self.id_home_league_team = id_home_league_team
+        self.id_guest_league_team = id_guest_league_team
         self.home_team_composition: set[TeamCompositionRider] = set()
         self.guest_team_composition: set[TeamCompositionRider] = set()
         self.heats: set[Heat] = set()
@@ -178,7 +180,7 @@ class TeamMatchGame:
             if heat.finished:
                 for rider in heat.rider_scores.values():
                     if rider and rider.score and rider.helmet_color in HOME_TEAM_HELMETS:
-                        scores += rider.score.value
+                        scores += rider.score
         return scores
 
     @property
@@ -188,5 +190,5 @@ class TeamMatchGame:
             if heat.finished:
                 for rider in heat.rider_scores.values():
                     if rider and rider.score and rider.helmet_color in GUEST_TEAM_HELMETS:
-                        scores += rider.score.value
+                        scores += rider.score
         return scores
