@@ -60,6 +60,7 @@ class RidersGroup(AggregateRoot):
 
     def add(self, rider: Rider):
         self.riders.add(rider)
+        self.version_number += 1
 
     def recognize(self, name):
         ret = []

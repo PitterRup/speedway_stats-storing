@@ -1,6 +1,6 @@
 import pytest
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, clear_mappers
+from sqlalchemy.orm import sessionmaker, clear_mappers, close_all_sessions
 from tenacity import retry, stop_after_delay
 
 from storing import config
@@ -36,12 +36,10 @@ def postgres_db():
     league_season_orm.metadata.create_all(engine)
     team_match_game_orm.metadata.create_all(engine)
     yield engine
-    for tbl in reversed(base_orm.metadata.sorted_tables):
-        engine.execute(tbl.delete())
-    for tbl in reversed(league_season_orm.metadata.sorted_tables):
-        engine.execute(tbl.delete())
-    for tbl in reversed(team_match_game_orm.metadata.sorted_tables):
-        engine.execute(tbl.delete())
+    close_all_sessions()
+    base_orm.metadata.drop_all(engine)
+    league_season_orm.metadata.drop_all(engine)
+    team_match_game_orm.metadata.drop_all(engine)
 
 
 @pytest.fixture

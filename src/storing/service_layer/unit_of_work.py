@@ -69,3 +69,15 @@ class AbstractTeamsGroupUnitOfWork(AbstractUnitOfWork[model.TeamsGroup]):
 class SqlAlchemyTeamsGroupUnitOfWork(AbstractTeamsGroupUnitOfWork, SqlAlchemyUnitOfWork):
     def _enter(self):
         self.teams_groups = base_repository.SqlAlchemyTeamsGroupRepository(self.session)
+
+
+class AbstractRidersGroupUnitOfWork(AbstractUnitOfWork[model.RidersGroup]):
+    riders_groups: base_repository.AbstractRidersGroupRepository
+
+    def _get_seen_objects(self) -> set[model.TeamsGroup]:
+        return self.riders_groups.seen
+
+
+class SqlAlchemyRidersGroupUnitOfWork(AbstractRidersGroupUnitOfWork, SqlAlchemyUnitOfWork):
+    def _enter(self):
+        self.riders_groups = base_repository.SqlAlchemyRidersGroupRepository(self.session)

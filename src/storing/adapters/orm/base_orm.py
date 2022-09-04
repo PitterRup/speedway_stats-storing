@@ -61,6 +61,7 @@ riders_groups = Table(
     metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
     Column("name", String(255)),
+    Column("version_number", Integer, nullable=False, server_default="0"),
 )
 
 
