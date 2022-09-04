@@ -25,6 +25,10 @@ class TeamsGroup(AggregateRoot):
         self.name = name
         self.teams: set[Team] = set()
 
+    def add(self, team: Team):
+        self.teams.add(team)
+        self.version_number += 1
+
     def recognize(self, name: str):
         ret = []
         for team in self.teams:
@@ -53,6 +57,9 @@ class RidersGroup(AggregateRoot):
         super().__init__()
         self.name = name
         self.riders: set[Rider] = set()
+
+    def add(self, rider: Rider):
+        self.riders.add(rider)
 
     def recognize(self, name):
         ret = []

@@ -35,8 +35,37 @@ class AbstractUnitOfWork(abc.ABC, Generic[M]):
         raise NotImplementedError
 
 
+class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
+    def __init__(self, session_factory):
+        self.session_factory = session_factory
+
+    def __enter__(self):
+        self.session = self.session_factory()
+        self._enter()
+        return super().__enter__()
+
+    @abc.abstractmethod
+    def _enter(self):
+        raise NotImplementedError
+
+    def __exit__(self, *args):
+        super().__exit__(*args)
+        self.session.close()
+
+    def _commit(self):
+        self.session.commit()
+
+    def rollback(self):
+        self.session.rollback()
+
+
 class AbstractTeamsGroupUnitOfWork(AbstractUnitOfWork[model.TeamsGroup]):
-    teams_groups: base_repository.AbstractRepository
+    teams_groups: base_repository.AbstractTeamsGroupRepository
 
     def _get_seen_objects(self) -> set[model.TeamsGroup]:
         return self.teams_groups.seen
+
+
+class SqlAlchemyTeamsGroupUnitOfWork(AbstractTeamsGroupUnitOfWork, SqlAlchemyUnitOfWork):
+    def _enter(self):
+        self.teams_groups = base_repository.SqlAlchemyTeamsGroupRepository(self.session)

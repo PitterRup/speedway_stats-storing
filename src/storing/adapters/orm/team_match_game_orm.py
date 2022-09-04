@@ -1,7 +1,7 @@
 import logging
 
 from sqlalchemy import (
-    Boolean, Column, Enum, ForeignKey, Integer, MetaData, Numeric, Table, Unicode, and_
+    Boolean, Column, Enum, ForeignKey, Integer, MetaData, Numeric, Table, Unicode, and_, event
 )
 from sqlalchemy.orm import mapper, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
@@ -125,3 +125,7 @@ def start_mappers():
             "heats": relationship(team_match_game_heats_mapper, collection_class=set),
         }
     )
+
+@event.listens_for(model.TeamMatchGame, "load")
+def receive_load(game, _):
+    game.events = []
