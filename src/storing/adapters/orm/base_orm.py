@@ -43,7 +43,7 @@ teams_groups = Table(
 teams = Table(
     "teams",
     metadata,
-    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("id_team", Integer, primary_key=True, autoincrement=True),
     Column("id_team_group", ForeignKey('teams_groups.id'), nullable=False),
     Column("name", String(255)),
 )

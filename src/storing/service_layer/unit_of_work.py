@@ -40,7 +40,7 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
         self.session_factory = session_factory
 
     def __enter__(self):
-        self.session = self.session_factory()
+        self.session = self.session_factory()  # pylint: disable=attribute-defined-outside-init
         self._enter()
         return super().__enter__()
 

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import date
 
 from storing.domain.models.aggregate import AggregateRoot
+from storing.domain import events
 
 
 @dataclass
@@ -17,6 +18,7 @@ class Season:
 @dataclass(unsafe_hash=True)
 class Team:
     name: str
+    id_team: int = None
 
 
 class TeamsGroup(AggregateRoot):
@@ -35,10 +37,21 @@ class TeamsGroup(AggregateRoot):
             if team.name in name:
                 ret.append(team)
         if len(ret) == 0:
-            raise Exception('Not found')
-        if len(ret) > 1:
-            raise Exception('Found more than one team')
-        return ret[0]
+            self.events.append(
+                events.NotRecognizedTeam(recognizing_team_name=name)
+            )
+        elif len(ret) > 1:
+            self.events.append(
+                events.RecognizedMultipleTeams(recognizing_team_name=name)
+            )
+        else:
+            self.events.append(
+                events.RecognizedTeam(
+                    recognizing_team_name=name,
+                    id_team=ret[0].id_team,
+                )
+            )
+            return ret[0]
 
 
 @dataclass
@@ -50,6 +63,7 @@ class Stadium:
 class Rider:
     name: str
     birthday: date
+    id_rider: int = None
 
 
 class RidersGroup(AggregateRoot):
@@ -68,10 +82,21 @@ class RidersGroup(AggregateRoot):
             if rider.name == name:
                 ret.append(rider)
         if len(ret) == 0:
-            raise Exception('Not found')
-        if len(ret) > 1:
-            raise Exception('Found more than one rider')
-        return ret[0]
+            self.events.append(
+                events.NotRecognizedRider(recognizing_rider_name=name)
+            )
+        elif len(ret) > 1:
+            self.events.append(
+                events.RecognizedMultipleRiders(recognizing_rider_name=name)
+            )
+        else:
+            self.events.append(
+                events.RecognizedRider(
+                    recognizing_rider_name=name,
+                    id_rider=ret[0].id_rider,
+                )
+            )
+            return ret[0]
 
 
 @dataclass
